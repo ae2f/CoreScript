@@ -25,12 +25,11 @@ set(ae2f_CoreScript_Wh ./path/to/the/corescript)
 # Execute git to fetch CoreScript when repository does not exist
 if(NOT EXISTS ${ae2f_CoreScript_Wh})
     execute_process(
-    COMMAND git clone https://codeberg.org/ae2f/CoreScript
-    ${ae2f_CoreScript_Wh}
-    )
+            COMMAND git clone https://codeberg.org/ae2f/CoreScript
+            ${ae2f_CoreScript_Wh}
+            )
+endif()
 
 # add subdirectory
 add_subdirectory(${ae2f_CoreScript_Wh})
-
-endif()
-```
+    ```
