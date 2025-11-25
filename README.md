@@ -37,7 +37,4 @@ if(NOT ae2f_CoreScript_Wh)
 	add_subdirectory(${ae2f_CoreScript_Wh})
 
 endif()
-
-# add subdirectory
-add_subdirectory(${ae2f_CoreScript_Wh})
 ```
