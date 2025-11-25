@@ -8,7 +8,7 @@ set(ae2f_float float CACHE STRING "Float type for the template.")
 set(ae2f_packcount 0 CACHE STRING "Pack count for pre-defined structures.")
 set(ae2f_ProjRoot ${CMAKE_CURRENT_SOURCE_DIR} CACHE STRING "Current Source Root")
 set(ae2f_BinRoot ${CMAKE_CURRENT_BINARY_DIR} CACHE STRING "Current Binary Root")
-set(ae2f_submod  submod CACHE STRING submod)
+set(ae2f_submod  .submod CACHE STRING "Subdirectory for the project's library.")
 
 if(ae2f_IS_SHARED)
 	set(ae2f_LIBPREFIX SHARED CACHE STRING "SHARED")
