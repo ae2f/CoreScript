@@ -1,3 +1,7 @@
+cmake_minimum_required(VERSION 3.10)
+
+project(ae2f-CoreScript)
+
 option(ae2f_IS_SHARED "Is a shared library or static one." OFF)
 option(ae2f_DOC "When activated, it would generate project with the deaders of cmake utility functions." OFF)
 option(ae2f_TEST "When activated, it would generate test projects." ON)
@@ -464,3 +468,6 @@ function(ae2f_CoreLibFetchX prm_AuthorName prm_TarName prm_TagName)
 		)
 endfunction()
 
+
+add_library(ae2f_CoreScript INTERFACE)
+add_library(ae2f::CoreScript ALIAS ae2f_CoreScript)
