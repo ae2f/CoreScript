@@ -30,7 +30,6 @@ function(ae2f_UltraErrASAN TARGET FLAG TEST_NAME)
 		set(gnu-flag-cc)
 		set(gnu-flag-lnk)
 
-
 		if(${PRM_C_COMPILER_ID} STREQUAL "GNU" AND ${PRM_CXX_COMPILER_ID} STREQUAL "GNU")
 
 			if(LINUX)
@@ -50,15 +49,13 @@ function(ae2f_UltraErrASAN TARGET FLAG TEST_NAME)
 			if(_gnu_asan)
 				string(REGEX REPLACE "[ \t\n\r]+" "" libsan_path "${_libsan_path}")
 				set(gnu-flag -fsanitize=address -fsanitize=undefined)
-			endif()
+				set(gnu-flag-lnk -fsanitize=address -fsanitize=undefined)
 
-			if(TEST_NAME)
 				set_tests_properties(
 					${TEST_NAME} PROPERTIES
 					ENVIRONMENT "LD_PRELOAD=${libsan_path}"
 					)
 			endif()
-
 		endif()
 	endmacro(gnu)
 
