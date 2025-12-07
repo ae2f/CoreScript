@@ -25,6 +25,11 @@ function(ae2f_UltraErrASAN TARGET FLAG TEST_NAME)
 	message(STATUS "ae2f::ASAN::${TARGET}")
 	macro(gnu PRM_C_COMPILER_ID PRM_CXX_COMPILER_ID PRM_C_COMPILER PRM_CXX_COMPILER)
 		set(_gnu_asan OFF)
+		set(gnu-flag)
+		set(gnu-flag-c)
+		set(gnu-flag-cc)
+		set(gnu-flag-lnk)
+
 
 		if(LINUX)
 			execute_process(
@@ -42,7 +47,7 @@ function(ae2f_UltraErrASAN TARGET FLAG TEST_NAME)
 
 		if(_gnu_asan)
 			string(REGEX REPLACE "[ \t\n\r]+" "" libsan_path "${_libsan_path}")
-			set(asan_flag -fsanitize=address -fsanitize=undefined)
+			set(gnu-flag -fsanitize=address -fsanitize=undefined)
 		endif()
 
 		if(TEST_NAME)
@@ -147,7 +152,6 @@ function(ae2f_UltraErrWERROR TARGET FLAG)
 			# gnu_asan(${PRM_C_COMPILER_ID} ${PRM_CXX_COMPILER_ID} ${PRM_C_COMPILER} ${PRM_CXX_COMPILER})
 
 			set(gnu-flag
-				${asan_flag}
 				-Wall -Wextra -Werror -Wpedantic
 				-Wshadow 
 				-Wfloat-equal -Wundef 
@@ -165,7 +169,6 @@ function(ae2f_UltraErrWERROR TARGET FLAG)
 				)
 			set(
 				gnu-flag-lnk
-				${asan_flag}
 				)
 		endif()
 	endmacro(gnu)
