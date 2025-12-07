@@ -20,9 +20,10 @@ else()
 	set(ae2f_LIBPREFIX STATIC CACHE STRING "STATIC")
 endif()
 
-function(ae2f_UltraError TARGET FLAG TEST_NAME)
-	message("UltraError for ${TARGET}")
-	macro(gnu_asan PRM_C_COMPILER_ID PRM_CXX_COMPILER_ID PRM_C_COMPILER PRM_CXX_COMPILER)
+
+function(ae2f_UltraErrASAN TARGET FLAG TEST_NAME)
+	message(STATUS "ae2f::ASAN::${TARGET}")
+	macro(gnu PRM_C_COMPILER_ID PRM_CXX_COMPILER_ID PRM_C_COMPILER PRM_CXX_COMPILER)
 		set(_gnu_asan OFF)
 
 		if(LINUX)
@@ -48,62 +49,6 @@ function(ae2f_UltraError TARGET FLAG TEST_NAME)
 			set_tests_properties(
 				${TEST_NAME} PROPERTIES
 				ENVIRONMENT "LD_PRELOAD=${libsan_path}"
-				)
-		endif()
-	endmacro(gnu_asan)
-
-	macro(gnu PRM_C_COMPILER_ID PRM_CXX_COMPILER_ID PRM_C_COMPILER PRM_CXX_COMPILER)
-		set(gnu-flag)
-		set(gnu-flag-c)
-		set(gnu-flag-cc)
-		set(gnu-flag-lnk)
-
-		if(${PRM_C_COMPILER_ID} STREQUAL "GNU")
-			set(gnu-flag-c
-				-Wstrict-prototypes 
-				-Wmissing-prototypes 
-				-Wnested-externs
-				-Wold-style-definition 
-				-Wunsuffixed-float-constants
-				)
-		endif()
-
-		if(${PRM_CXX_COMPILER_ID} STREQUAL "GNU")
-			set(gnu-flag-cc
-				-Wold-style-cast 
-				-Woverloaded-virtual 
-				-Wnon-virtual-dtor
-				-Wsuggest-override
-				-Wuseless-cast 
-				-Wcomment 
-				-Wreorder 
-				-Wnoexcept
-				)
-		endif()
-
-		if(${PRM_C_COMPILER_ID} STREQUAL "GNU" AND ${PRM_CXX_COMPILER_ID} STREQUAL "GNU")
-			gnu_asan(${PRM_C_COMPILER_ID} ${PRM_CXX_COMPILER_ID} ${PRM_C_COMPILER} ${PRM_CXX_COMPILER})
-
-			set(gnu-flag
-				${asan_flag}
-				-Wall -Wextra -Werror -Wpedantic
-				-Wshadow 
-				-Wfloat-equal -Wundef 
-				-Wcast-align=strict
-				-Wconversion 
-				-Wsign-conversion 
-				-Wnull-dereference
-				-Wformat=2 -Wformat-signedness -Wformat-truncation
-				-Wimplicit-fallthrough=5 -Wswitch-enum -Wswitch-default
-				-Wvla -Wduplicated-cond -Wduplicated-branches -Wlogical-op
-				-Warith-conversion -Wmissing-declarations
-				-D_GLIBCXX_ASSERTIONS
-				-fstrict-flex-arrays=3 -fstack-protector-strong -fstack-clash-protection
-				-fanalyzer -ftrivial-auto-var-init=zero
-				)
-			set(
-				gnu-flag-lnk
-				${asan_flag}
 				)
 		endif()
 	endmacro(gnu)
@@ -166,6 +111,123 @@ function(ae2f_UltraError TARGET FLAG TEST_NAME)
 		)
 endfunction()
 
+function(ae2f_UltraErrWERROR TARGET FLAG)
+	message(STATUS "ae2f::WERROR::${TARGET}")
+
+	macro(gnu PRM_C_COMPILER_ID PRM_CXX_COMPILER_ID PRM_C_COMPILER PRM_CXX_COMPILER)
+		set(gnu-flag)
+		set(gnu-flag-c)
+		set(gnu-flag-cc)
+		set(gnu-flag-lnk)
+
+		if(${PRM_C_COMPILER_ID} STREQUAL "GNU")
+			set(gnu-flag-c
+				-Wstrict-prototypes 
+				-Wmissing-prototypes 
+				-Wnested-externs
+				-Wold-style-definition 
+				-Wunsuffixed-float-constants
+				)
+		endif()
+
+		if(${PRM_CXX_COMPILER_ID} STREQUAL "GNU")
+			set(gnu-flag-cc
+				-Wold-style-cast 
+				-Woverloaded-virtual 
+				-Wnon-virtual-dtor
+				-Wsuggest-override
+				-Wuseless-cast 
+				-Wcomment 
+				-Wreorder 
+				-Wnoexcept
+				)
+		endif()
+
+		if(${PRM_C_COMPILER_ID} STREQUAL "GNU" AND ${PRM_CXX_COMPILER_ID} STREQUAL "GNU")
+			# gnu_asan(${PRM_C_COMPILER_ID} ${PRM_CXX_COMPILER_ID} ${PRM_C_COMPILER} ${PRM_CXX_COMPILER})
+
+			set(gnu-flag
+				${asan_flag}
+				-Wall -Wextra -Werror -Wpedantic
+				-Wshadow 
+				-Wfloat-equal -Wundef 
+				-Wcast-align=strict
+				-Wconversion 
+				-Wsign-conversion 
+				-Wnull-dereference
+				-Wformat=2 -Wformat-signedness -Wformat-truncation
+				-Wimplicit-fallthrough=5 -Wswitch-enum -Wswitch-default
+				-Wvla -Wduplicated-cond -Wduplicated-branches -Wlogical-op
+				-Warith-conversion -Wmissing-declarations
+				-D_GLIBCXX_ASSERTIONS
+				-fstrict-flex-arrays=3 -fstack-protector-strong -fstack-clash-protection
+				-fanalyzer -ftrivial-auto-var-init=zero
+				)
+			set(
+				gnu-flag-lnk
+				${asan_flag}
+				)
+		endif()
+	endmacro(gnu)
+
+	macro(clang PRM_C_COMPILER_ID PRM_CXX_COMPILER_ID PRM_C_COMPILER PRM_CXX_COMPILER)
+		set(clang-flag)
+		set(clang-flag-c)
+		set(clang-flag-cc)
+		set(clang-flag-lnk)
+	endmacro(clang)
+
+	get_target_property(ccid-c ${TARGET} C_COMPILER_ID)
+	get_target_property(ccid-cc ${TARGET} CXX_COMPILER_ID)
+
+	get_target_property(cc-c ${TARGET} C_COMPILER)
+	get_target_property(cc-cc ${TARGET} CXX_COMPILER)
+
+	if(ccid-c STREQUAL "ccid-c-NOTFOUND")
+		set(ccid-c ${CMAKE_C_COMPILER_ID})
+	endif()
+	if(ccid-cc STREQUAL "ccid-cc-NOTFOUND")
+		set(ccid-cc ${CMAKE_CXX_COMPILER_ID})
+	endif()
+
+	if(cc-c STREQUAL "cc-c-NOTFOUND")
+		set(cc-c ${CMAKE_C_COMPILER})
+	endif()
+	if(cc-cc STREQUAL "cc-cc-NOTFOUND")
+		set(cc-cc ${CMAKE_CXX_COMPILER})
+	endif()
+
+
+	gnu(${ccid-c} ${ccid-cc} ${cc-c} ${cc-cc})
+	clang(${ccid-c} ${ccid-cc} ${cc-c} ${cc-cc})
+
+	target_compile_options(${TARGET} ${FLAG}
+		${gnu-flag}
+		${clang-flag}
+
+		$<$<COMPILE_LANGUAGE:CXX>:
+		${gnu-flag-cc}
+		${clang-flag-cc}
+		>
+		$<$<COMPILE_LANGUAGE:C>:
+		${gnu-flag-c}
+		${clang-flag-c}
+		>
+		)
+
+	target_link_options(${TARGET} ${FLAG}
+		${gnu-flag-lnk}
+		${clang-flag-lnk}
+		)
+
+
+endfunction()
+
+function(ae2f_UltraError TARGET FLAG TEST_NAME)
+	ae2f_UltraErrASAN(${TARGET} ${FLAG} ${TEST_NAME})
+	ae2f_UltraErrWERROR(${TARGET} ${FLAG})
+endfunction()
+
 # @namespace ___DOC_CMAKE
 # @brief
 # Note they functions defined on CMake, not C/C++.
@@ -223,11 +285,8 @@ endfunction()
 # @see ___DOC_CMAKE::ae2f_TEST
 function(ae2f_CoreTestTentVerbose prm_LibName prm_TestSourcesDir)
 	if(ae2f_TEST)
-		if(ae2f_CXX)
-			file(GLOB_RECURSE files "${prm_TestSourcesDir}/*")
-		else()
-			file(GLOB_RECURSE files "${prm_TestSourcesDir}/*.c")
-		endif()
+
+		file(GLOB files "${prm_TestSourcesDir}/*.c*")
 
 		foreach(item IN LISTS files)
 			get_filename_component(__NAME ${item} NAME)
