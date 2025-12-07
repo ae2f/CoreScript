@@ -31,30 +31,34 @@ function(ae2f_UltraErrASAN TARGET FLAG TEST_NAME)
 		set(gnu-flag-lnk)
 
 
-		if(LINUX)
-			execute_process(
-				COMMAND ${PRM_C_COMPILER} -print-file-name=libasan.so
-				OUTPUT_VARIABLE	_libsan_path
-				)
-			set(_gnu_asan ON)
-		elseif(APPLE)
-			execute_process(
-				COMMAND ${PRM_C_COMPILER} -print-file-name=libasan.dylib
-				OUTPUT_VARIABLE	_libsan_path
-				)
-			set(_gnu_asan ON)
-		endif()
+		if(${PRM_C_COMPILER_ID} STREQUAL "GNU" AND ${PRM_CXX_COMPILER_ID} STREQUAL "GNU")
 
-		if(_gnu_asan)
-			string(REGEX REPLACE "[ \t\n\r]+" "" libsan_path "${_libsan_path}")
-			set(gnu-flag -fsanitize=address -fsanitize=undefined)
-		endif()
+			if(LINUX)
+				execute_process(
+					COMMAND ${PRM_C_COMPILER} -print-file-name=libasan.so
+					OUTPUT_VARIABLE	_libsan_path
+					)
+				set(_gnu_asan ON)
+			elseif(APPLE)
+				execute_process(
+					COMMAND ${PRM_C_COMPILER} -print-file-name=libasan.dylib
+					OUTPUT_VARIABLE	_libsan_path
+					)
+				set(_gnu_asan ON)
+			endif()
 
-		if(TEST_NAME)
-			set_tests_properties(
-				${TEST_NAME} PROPERTIES
-				ENVIRONMENT "LD_PRELOAD=${libsan_path}"
-				)
+			if(_gnu_asan)
+				string(REGEX REPLACE "[ \t\n\r]+" "" libsan_path "${_libsan_path}")
+				set(gnu-flag -fsanitize=address -fsanitize=undefined)
+			endif()
+
+			if(TEST_NAME)
+				set_tests_properties(
+					${TEST_NAME} PROPERTIES
+					ENVIRONMENT "LD_PRELOAD=${libsan_path}"
+					)
+			endif()
+
 		endif()
 	endmacro(gnu)
 
