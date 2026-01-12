@@ -22,7 +22,7 @@ endif()
 
 
 function(ae2f_UltraErrASAN TARGET FLAG TEST_NAME)
-	message(STATUS "ae2f::ASAN::${TARGET}")
+	message(STATUS "ae2f::Err::ASAN ${TARGET} ${FLAG} ${TEST_NAME}")
 	macro(gnu PRM_C_COMPILER_ID PRM_CXX_COMPILER_ID PRM_C_COMPILER PRM_CXX_COMPILER)
 		set(_gnu_asan OFF)
 		set(gnu-flag)
@@ -118,7 +118,7 @@ function(ae2f_UltraErrASAN TARGET FLAG TEST_NAME)
 endfunction()
 
 function(ae2f_UltraErrWERROR TARGET FLAG)
-	message(STATUS "ae2f::WERROR::${TARGET}")
+	message(STATUS "ae2f::Err::WERROR ${TARGET} ${FLAG}")
 
 	macro(gnu PRM_C_COMPILER_ID PRM_CXX_COMPILER_ID PRM_C_COMPILER PRM_CXX_COMPILER)
 		set(gnu-flag)
@@ -228,6 +228,7 @@ function(ae2f_UltraErrWERROR TARGET FLAG)
 endfunction()
 
 function(ae2f_UltraError TARGET FLAG TEST_NAME)
+	message(STATUS "ae2f::Err ${TARGET} ${FLAG} ${TEST_NAME}")
 	ae2f_UltraErrASAN(${TARGET} ${FLAG} ${TEST_NAME})
 	ae2f_UltraErrWERROR(${TARGET} ${FLAG})
 endfunction()
@@ -253,6 +254,7 @@ endfunction()
 # @see ___DOC_CMAKE::ae2f_TEST
 function(ae2f_CoreTestTent prm_LibName prm_TestSourcesDir)
 	if(ae2f_TEST)
+		message(STATUS "ae2f::Test ${prm_LibName} ${prm_TestSourcesDir}")
 		file(GLOB files "${prm_TestSourcesDir}/*.c*")
 
 		foreach(item IN LISTS files)
@@ -285,7 +287,7 @@ endfunction()
 # @see ___DOC_CMAKE::ae2f_TEST
 function(ae2f_CoreTestTentVerbose prm_LibName prm_TestSourcesDir)
 	if(ae2f_TEST)
-
+		message(STATUS "ae2f::Test::Verbose ${prm_LibName} ${prm_TestSourcesDir}")
 		file(GLOB files "${prm_TestSourcesDir}/*.c*")
 
 		foreach(item IN LISTS files)
@@ -320,6 +322,8 @@ endfunction()
 # @param ...
 # The sources for the project.
 function(ae2f_CoreLibTentConfigCustom prm_TarName prm_TarPreFix prm_includeDir prm_namespace prm_configpath)
+	message(STATUS "ae2f::Lib::Cnf ${prm_TarName} ${prm_TarPreFix} ${prm_includeDir} ${prm_namespace} ${prm_configpath}")
+
 	# Namespace Package
 	include(GNUInstallDirs)
 
@@ -418,6 +422,7 @@ endfunction()
 # @see ___DOC_CMAKE::ae2f_DOC
 function(ae2f_CoreUtilityDocTent prm_TarName prm_includeDir prm_namespace)
 	if(ae2f_DOC)
+		message(STATUS "ae2f::Util::Doc ${prm_TarName} ${prm_includeDir} ${prm_namespace}")
 		file(GLOB_RECURSE src ${prm_includeDir} "*.cmake.hpp")
 		ae2f_CoreLibTent(${prm_TarName}-CMakeDoc INTERFACE ${prm_includeDir} ${prm_namespace}doc ${src})
 		foreach(lib ${ARGN})
@@ -428,6 +433,7 @@ endfunction()
 
 # Domain name customization.
 function(ae2f_CoreLibFetch_DNS prm_AuthorName prm_namespace prm_TarName prm_TagName prm_Domain)
+	message(STATUS "ae2f::Fetch::DNS ${prm_AuthorName} ${prm_namespace} ${prm_TarName} ${prm_TagName} ${prm_Domain}")
 	if(NOT TARGET ${prm_namespace}::${prm_TarName})
 		if(NOT EXISTS ${ae2f_ProjRoot}/${ae2f_submod}/${prm_AuthorName}/${prm_TarName}/CMakeLists.txt)
 			execute_process(
@@ -503,7 +509,8 @@ endfunction()
 
 # Fetched library will be in ${prm_AuthorName}__${prm_namespace}__${prm_TarName}__FETCHED 
 function(ae2f_CoreLibFetchX_NS prm_AuthorName prm_namespace prm_TarName prm_TagName)
-	find_package(${prm_TarName})
+	message(STATUS "ae2f::FetchX::NS ${prm_AuthorName} ${prm_namespace} ${prm_TarName} ${prm_TagName}")
+	find_package(${prm_TarName} QUIET)
 
 	if(${prm_TarName}_FOUND)
 		set(
@@ -517,6 +524,7 @@ endfunction()
 
 # Deprecated, works when Authoranme and namespace are same.
 function(ae2f_CoreLibFetchX prm_AuthorName prm_TarName prm_TagName)
+
 	ae2f_CoreLibFetchX_NS(${prm_AuthorName} ${prm_AuthorName} ${prm_TarName} ${prm_TagName})
 
 	set(
