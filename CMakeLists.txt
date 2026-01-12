@@ -253,11 +253,7 @@ endfunction()
 # @see ___DOC_CMAKE::ae2f_TEST
 function(ae2f_CoreTestTent prm_LibName prm_TestSourcesDir)
 	if(ae2f_TEST)
-		if(ae2f_CXX)
-			file(GLOB_RECURSE files "${prm_TestSourcesDir}/*")
-		else()
-			file(GLOB_RECURSE files "${prm_TestSourcesDir}/*.c")
-		endif()
+		file(GLOB files "${prm_TestSourcesDir}/*.c*")
 
 		foreach(item IN LISTS files)
 			get_filename_component(__NAME ${item} NAME)
