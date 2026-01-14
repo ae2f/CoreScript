@@ -406,7 +406,7 @@ if (NOT TARGET ae2f::CoreScript)
 
 		# Install Settings
 		install(TARGETS ${prm_namespace}-${prm_TarName}
-			EXPORT ${prm_namespace}Targets
+			EXPORT ${prm_TarName}Targets
 			RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
 			ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
 			LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
