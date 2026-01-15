@@ -385,7 +385,7 @@ if (NOT TARGET ae2f::CoreScript)
 	# 
 	# @param ...
 	# The sources for the project.
-	function(ae2f_CoreLibTentConfigCustom prm_TarName prm_TarPreFix prm_includeDir prm_namespace prm_cfgpath)
+	macro(ae2f_CoreLibTentConfigCustom prm_TarName prm_TarPreFix prm_includeDir prm_namespace prm_cfgpath)
 		message(STATUS "ae2f::Lib::Cnf ${prm_TarName} ${prm_TarPreFix} ${prm_includeDir} ${prm_namespace} ${prm_cfgpath}")
 
 		# Namespace Package
@@ -418,8 +418,8 @@ if (NOT TARGET ae2f::CoreScript)
 
 		ae2f_CoreMkComponent(${prm_TarName} ${prm_namespace} ${prm_cfgpath})
 
-		set(${prm_namespace}__${prm_TarName}__TENT ${prm_namespace}-${prm_TarName} CACHE STRING ${prm_namespace}-${prm_TarName})
-	endfunction()
+		set(${prm_namespace}__${prm_TarName}__TENT ${prm_namespace}-${prm_TarName})
+	endmacro()
 
 	# @brief
 	# Makes a Library installable.
@@ -479,7 +479,7 @@ if (NOT TARGET ae2f::CoreScript)
 	endfunction()
 
 	# Domain name customization.
-	function(ae2f_CoreLibFetch_DNS prm_AuthorName prm_namespace prm_TarName prm_TagName prm_Domain)
+	macro(ae2f_CoreLibFetch_DNS prm_AuthorName prm_namespace prm_TarName prm_TagName prm_Domain)
 		message(STATUS "ae2f::Fetch::DNS ${prm_AuthorName} ${prm_namespace} ${prm_TarName} ${prm_TagName} ${prm_Domain}")
 		if(NOT TARGET ${prm_namespace}::${prm_TarName})
 			if(NOT EXISTS ${ae2f_ProjRoot}/${ae2f_submod}/${prm_AuthorName}/${prm_TarName}/CMakeLists.txt)
@@ -507,11 +507,10 @@ if (NOT TARGET ae2f::CoreScript)
 		endif()
 
 		set(
-			${prm_AuthorName}__${prm_namespace}__${prm_TarName}__FETCHED 
-			${prm_namespace}::${prm_TarName} CACHE STRING ${prm_namespace}::${prm_TarName}
+			${prm_AuthorName}__${prm_namespace}__${prm_TarName}__FETCHED ${prm_namespace}::${prm_TarName}
 			)
 
-	endfunction()
+	endmacro()
 
 	# @brief 
 	# Domain name will stick on github.
@@ -529,7 +528,7 @@ if (NOT TARGET ae2f::CoreScript)
 	# Target name 
 	# @param prm_TagName
 	# Tag name
-	function(ae2f_CoreLibFetch_NS prm_AuthorName prm_namespace prm_TarName prm_TagName)
+	macro(ae2f_CoreLibFetch_NS prm_AuthorName prm_namespace prm_TarName prm_TagName)
 		ae2f_CoreLibFetch_DNS(
 			${prm_AuthorName} 
 			${prm_namespace} 
@@ -538,49 +537,58 @@ if (NOT TARGET ae2f::CoreScript)
 			"github.com" 
 			${ARGN}
 			)
-	endfunction()
+	endmacro()
 
 
 	# Deprecated. works only when Authorname and namespace are same.
-	function(ae2f_CoreLibFetch prm_AuthorName prm_TarName prm_TagName)
+	macro(ae2f_CoreLibFetch prm_AuthorName prm_TarName prm_TagName)
 		ae2f_CoreLibFetch_NS(${prm_AuthorName} ${prm_AuthorName} ${prm_TarName} ${prm_TagName})
 
 		set(
 			${prm_AuthorName}__${prm_TarName}__FETCHED
 			${${prm_AuthorName}__${prm_AuthorName}__${prm_TarName}__FETCHED}
-			CACHE STRING
-			${${prm_AuthorName}__${prm_AuthorName}__${prm_TarName}__FETCHED}
 			)
-	endfunction()
+	endmacro()
+
+	macro(ae2f_CoreLibFetchX_DNS prm_AuthorName prm_namespace prm_TarName prm_TagName prm_Domain)
+		message(STATUS "ae2f::FetchX::DNS ${prm_AuthorName} ${prm_namespace} ${prm_TarName} ${prm_TagName} ${prm_Domain}")
+		find_package(${prm_TarName} QUIET)
+
+		if(${prm_TarName}_FOUND)
+			set(
+				${prm_AuthorName}__${prm_namespace}__${prm_TarName}__FETCHED
+				${prm_namespace}::${prm_TarName} 
+				)
+		else()
+			ae2f_CoreLibFetch_DNS(${prm_AuthorName} ${prm_namespace} ${prm_TarName} ${prm_TagName} ${prm_Domain})
+		endif()
+	endmacro()
 
 
 	# Fetched library will be in ${prm_AuthorName}__${prm_namespace}__${prm_TarName}__FETCHED 
-	function(ae2f_CoreLibFetchX_NS prm_AuthorName prm_namespace prm_TarName prm_TagName)
+	macro(ae2f_CoreLibFetchX_NS prm_AuthorName prm_namespace prm_TarName prm_TagName)
 		message(STATUS "ae2f::FetchX::NS ${prm_AuthorName} ${prm_namespace} ${prm_TarName} ${prm_TagName}")
 		find_package(${prm_TarName} QUIET)
 
 		if(${prm_TarName}_FOUND)
 			set(
 				${prm_AuthorName}__${prm_namespace}__${prm_TarName}__FETCHED
-				${prm_namespace}::${prm_TarName} CACHE STRING ${prm_namespace}::${prm_TarName}
+				${prm_namespace}::${prm_TarName} 
 				)
 		else()
 			ae2f_CoreLibFetch_NS(${prm_AuthorName} ${prm_namespace} ${prm_TarName} ${prm_TagName})
 		endif()
-	endfunction()
+	endmacro()
 
 	# Deprecated, works when Authoranme and namespace are same.
-	function(ae2f_CoreLibFetchX prm_AuthorName prm_TarName prm_TagName)
+	macro(ae2f_CoreLibFetchX prm_AuthorName prm_TarName prm_TagName)
 
 		ae2f_CoreLibFetchX_NS(${prm_AuthorName} ${prm_AuthorName} ${prm_TarName} ${prm_TagName})
 
 		set(
 			${prm_AuthorName}__${prm_TarName}__FETCHED
-			${${prm_AuthorName}__${prm_AuthorName}__${prm_TarName}__FETCHED}
-			CACHE STRING
-			${${prm_AuthorName}__${prm_AuthorName}__${prm_TarName}__FETCHED}
-			)
-	endfunction()
+			${${prm_AuthorName}__${prm_AuthorName}__${prm_TarName}__FETCHED})
+	endmacro()
 else()
 	add_library(ae2f_CoreScript INTERFACE)
 	add_library(ae2f::CoreScript ALIAS ae2f_CoreScript)
