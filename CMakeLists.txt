@@ -401,7 +401,7 @@ if (NOT TARGET ae2f::CoreScript)
 		target_include_directories(
 			${prm_namespace}-${prm_TarName} INTERFACE
 			$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/${prm_includeDir}/>  
-			$<INSTALL_INTERFACE:${prm_includeDir}/${prm_namespace}/>
+			$<INSTALL_INTERFACE:${prm_includeDir}/>
 			)
 
 		# Install Settings
@@ -412,8 +412,8 @@ if (NOT TARGET ae2f::CoreScript)
 			LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
 			INCLUDES DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
 
-		install(DIRECTORY ${prm_includeDir}/${prm_namespace}
-			DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/${prm_namespace}
+		install(DIRECTORY ${prm_includeDir}
+			DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
 			)
 
 		ae2f_CoreMkComponent(${prm_TarName} ${prm_namespace} ${prm_cfgpath})
