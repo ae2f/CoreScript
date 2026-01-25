@@ -438,7 +438,7 @@ if (NOT TARGET ae2f::CoreScript)
 	# 
 	# @param ...
 	# The sources for the project.
-	function(ae2f_CoreLibTent prm_TarName prm_TarPreFix prm_includeDir prm_namespace)
+	macro(ae2f_CoreLibTent prm_TarName prm_TarPreFix prm_includeDir prm_namespace)
 		ae2f_CoreLibTentConfigCustom(
 			${prm_TarName} 
 			${prm_TarPreFix} 
@@ -447,7 +447,7 @@ if (NOT TARGET ae2f::CoreScript)
 			${CMAKE_CURRENT_SOURCE_DIR}/Config.cmake.in
 			${ARGN}
 			)
-	endfunction()
+	endmacro()
 
 	# @brief
 	# Generate an interface project for document code for cmake utility functions. \n
