@@ -398,6 +398,14 @@ if (NOT TARGET ae2f::CoreScript)
 			add_library(${prm_TarName} ALIAS ${prm_namespace}-${prm_TarName})
 		endif()
 
+		if(NOT "${prm_TarPreFix}" STREQUAL "INTERFACE")
+			target_include_directories(
+				${prm_namespace}-${prm_TarName} PUBLIC
+				$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/${prm_includeDir}/>  
+				$<INSTALL_INTERFACE:${prm_includeDir}/>
+				)
+		endif()
+
 		target_include_directories(
 			${prm_namespace}-${prm_TarName} INTERFACE
 			$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/${prm_includeDir}/>  
