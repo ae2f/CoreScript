@@ -95,8 +95,8 @@ if (NOT TARGET ae2f::CoreScript)
 		endif()
 
 
-		gnu(${ccid-c} ${ccid-cc} ${cc-c} ${cc-cc})
-		clang(${ccid-c} ${ccid-cc} ${cc-c} ${cc-cc})
+		gnu	("${ccid-c}" "${ccid-cc}" "${cc-c}" "${cc-cc}")
+		clang	("${ccid-c}" "${ccid-cc}" "${cc-c}" "${cc-cc}")
 
 		target_compile_options(${TARGET} ${FLAG}
 			${gnu-flag}
@@ -127,7 +127,7 @@ if (NOT TARGET ae2f::CoreScript)
 			set(gnu-flag-cc)
 			set(gnu-flag-lnk)
 
-			if(${PRM_C_COMPILER_ID} STREQUAL "GNU")
+			if("${PRM_C_COMPILER_ID}" STREQUAL "GNU")
 				set(gnu-flag-c
 					-Wstrict-prototypes 
 					-Wmissing-prototypes 
@@ -137,7 +137,7 @@ if (NOT TARGET ae2f::CoreScript)
 					)
 			endif()
 
-			if(${PRM_CXX_COMPILER_ID} STREQUAL "GNU")
+			if("${PRM_CXX_COMPILER_ID}" STREQUAL "GNU")
 				set(gnu-flag-cc
 					-Wold-style-cast 
 					-Woverloaded-virtual 
@@ -150,9 +150,7 @@ if (NOT TARGET ae2f::CoreScript)
 					)
 			endif()
 
-			if(${PRM_C_COMPILER_ID} STREQUAL "GNU" AND ${PRM_CXX_COMPILER_ID} STREQUAL "GNU")
-				# gnu_asan(${PRM_C_COMPILER_ID} ${PRM_CXX_COMPILER_ID} ${PRM_C_COMPILER} ${PRM_CXX_COMPILER})
-
+			if("${PRM_C_COMPILER_ID}" STREQUAL "GNU" AND "${PRM_CXX_COMPILER_ID}" STREQUAL "GNU")
 				set(gnu-flag
 					-Wall -Wextra -Werror -Wpedantic
 					-Wshadow 
@@ -203,8 +201,8 @@ if (NOT TARGET ae2f::CoreScript)
 		endif()
 
 
-		gnu(${ccid-c} ${ccid-cc} ${cc-c} ${cc-cc})
-		clang(${ccid-c} ${ccid-cc} ${cc-c} ${cc-cc})
+		gnu	("${ccid-c}" "${ccid-cc}" "${cc-c}" "${cc-cc}")
+		clang	("${ccid-c}" "${ccid-cc}" "${cc-c}" "${cc-cc}")
 
 		target_compile_options(${TARGET} ${FLAG}
 			${gnu-flag}
