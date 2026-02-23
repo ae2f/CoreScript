@@ -24,6 +24,11 @@ if (NOT TARGET ae2f::CoreScript)
 
 	function(ae2f_UltraErrASAN TARGET FLAG TEST_NAME)
 		message(STATUS "ae2f::Err::ASAN ${TARGET} ${FLAG} ${TEST_NAME}")
+
+		if(NOT ${CMAKE_BUILD_TYPE} STREQUAL "Debug")
+			return()
+		endif()
+
 		macro(gnu PRM_C_COMPILER_ID PRM_CXX_COMPILER_ID PRM_C_COMPILER PRM_CXX_COMPILER)
 			set(_gnu_asan OFF)
 			set(gnu-flag)
@@ -31,7 +36,7 @@ if (NOT TARGET ae2f::CoreScript)
 			set(gnu-flag-cc)
 			set(gnu-flag-lnk)
 
-			if(${PRM_C_COMPILER_ID} STREQUAL "GNU" AND ${PRM_CXX_COMPILER_ID} STREQUAL "GNU")
+			if("${PRM_C_COMPILER_ID}" STREQUAL "GNU" AND "${PRM_CXX_COMPILER_ID}" STREQUAL "GNU")
 
 				if(LINUX)
 					execute_process(
@@ -66,7 +71,7 @@ if (NOT TARGET ae2f::CoreScript)
 			set(clang-flag-cc)
 			set(clang-flag-lnk)
 
-			if(${PRM_C_COMPILER_ID} STREQUAL "Clang" AND ${PRM_CXX_COMPILER_ID} STREQUAL "Clang")
+			if("${PRM_C_COMPILER_ID}" STREQUAL "Clang" AND "${PRM_CXX_COMPILER_ID}" STREQUAL "Clang")
 				if(NOT WIN32)
 					set(clang-flag -fsanitize=address)
 					set(clang-flag-lnk -fsanitize=address)
@@ -80,17 +85,17 @@ if (NOT TARGET ae2f::CoreScript)
 		get_target_property(cc-c ${TARGET} C_COMPILER)
 		get_target_property(cc-cc ${TARGET} CXX_COMPILER)
 
-		if(ccid-c STREQUAL "ccid-c-NOTFOUND")
+		if("${ccid-c}" STREQUAL "ccid-c-NOTFOUND")
 			set(ccid-c ${CMAKE_C_COMPILER_ID})
 		endif()
-		if(ccid-cc STREQUAL "ccid-cc-NOTFOUND")
+		if("${ccid-cc}" STREQUAL "ccid-cc-NOTFOUND")
 			set(ccid-cc ${CMAKE_CXX_COMPILER_ID})
 		endif()
 
-		if(cc-c STREQUAL "cc-c-NOTFOUND")
+		if("${cc-c}" STREQUAL "cc-c-NOTFOUND")
 			set(cc-c ${CMAKE_C_COMPILER})
 		endif()
-		if(cc-cc STREQUAL "cc-cc-NOTFOUND")
+		if("${cc-cc}" STREQUAL "cc-cc-NOTFOUND")
 			set(cc-cc ${CMAKE_CXX_COMPILER})
 		endif()
 
@@ -186,23 +191,23 @@ if (NOT TARGET ae2f::CoreScript)
 		get_target_property(cc-c ${TARGET} C_COMPILER)
 		get_target_property(cc-cc ${TARGET} CXX_COMPILER)
 
-		if(ccid-c STREQUAL "ccid-c-NOTFOUND")
+		if("${ccid-c}" STREQUAL "ccid-c-NOTFOUND")
 			set(ccid-c ${CMAKE_C_COMPILER_ID})
 		endif()
-		if(ccid-cc STREQUAL "ccid-cc-NOTFOUND")
+		if("${ccid-cc}" STREQUAL "ccid-cc-NOTFOUND")
 			set(ccid-cc ${CMAKE_CXX_COMPILER_ID})
 		endif()
 
-		if(cc-c STREQUAL "cc-c-NOTFOUND")
+		if("${cc-c}" STREQUAL "cc-c-NOTFOUND")
 			set(cc-c ${CMAKE_C_COMPILER})
 		endif()
-		if(cc-cc STREQUAL "cc-cc-NOTFOUND")
+		if("${cc-cc}" STREQUAL "cc-cc-NOTFOUND")
 			set(cc-cc ${CMAKE_CXX_COMPILER})
 		endif()
 
-
 		gnu	("${ccid-c}" "${ccid-cc}" "${cc-c}" "${cc-cc}")
 		clang	("${ccid-c}" "${ccid-cc}" "${cc-c}" "${cc-cc}")
+
 
 		target_compile_options(${TARGET} ${FLAG}
 			${gnu-flag}
@@ -257,10 +262,17 @@ if (NOT TARGET ae2f::CoreScript)
 			file(GLOB files "${prm_TestSourcesDir}/*.c*")
 
 			foreach(item IN LISTS files)
-				get_filename_component(__NAME ${item} NAME)
-				add_executable("${prm_LibName}-Test-${__NAME}" ${item})
-				target_link_libraries("${prm_LibName}-Test-${__NAME}" PRIVATE ${ARGN} ${prm_LibName})
-				add_test(NAME "${prm_LibName}-Test-${__NAME}" COMMAND "${prm_LibName}-Test-${__NAME}")
+				get_filename_component(__NAME ${item} NAME_WLE)
+				get_filename_component(___EXT ${item} EXT)
+				string(SUBSTRING "${___EXT}" 1 -1 __EXT)
+
+				add_executable("Test-${__EXT}-${prm_LibName}-${__NAME}" ${item})
+				target_link_libraries(
+					"Test-${__EXT}-${prm_LibName}-${__NAME}" 
+					PRIVATE ${ARGN} ${prm_LibName})
+				add_test(
+					NAME "Test-${__EXT}-${prm_LibName}-${__NAME}" 
+					COMMAND "Test=${__EXT}-${prm_LibName}-${__NAME}")
 			endforeach()
 		endif()
 	endfunction()
@@ -290,11 +302,15 @@ if (NOT TARGET ae2f::CoreScript)
 			file(GLOB files "${prm_TestSourcesDir}/*.c*")
 
 			foreach(item IN LISTS files)
-				get_filename_component(__NAME ${item} NAME)
-				add_executable("${prm_LibName}-Test-${__NAME}" ${item})
-				target_link_libraries("${prm_LibName}-Test-${__NAME}" PRIVATE ${ARGN} ${prm_LibName})
-				add_test(NAME "${prm_LibName}-Test-${__NAME}" COMMAND "${prm_LibName}-Test-${__NAME}")
-				ae2f_UltraError(${prm_LibName}-Test-${__NAME} PRIVATE ${prm_LibName}-Test-${__NAME})
+				get_filename_component(__NAME ${item} NAME_WLE)
+				get_filename_component(___EXT ${item} EXT)
+				string(SUBSTRING "${___EXT}" 1 -1 __EXT)
+				add_executable("Test-${__EXT}-${prm_LibName}-${__NAME}" ${item})
+				target_link_libraries("Test-${__EXT}-${prm_LibName}-${__NAME}" PRIVATE ${ARGN} ${prm_LibName})
+				add_test(NAME "Test-${__EXT}-${prm_LibName}-${__NAME}" 
+					COMMAND "Test-${__EXT}-${prm_LibName}-${__NAME}")
+				ae2f_UltraError("Test-${__EXT}-${prm_LibName}-${__NAME}" PRIVATE 
+					"Test-${__EXT}-${prm_LibName}-${__NAME}")
 			endforeach()
 		endif()
 	endfunction()
@@ -396,6 +412,14 @@ if (NOT TARGET ae2f::CoreScript)
 			add_library(${prm_TarName} ALIAS ${prm_namespace}-${prm_TarName})
 		endif()
 
+		if(NOT "${prm_TarPreFix}" STREQUAL "INTERFACE")
+			target_include_directories(
+				${prm_namespace}-${prm_TarName} PUBLIC
+				$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/${prm_includeDir}/>  
+				$<INSTALL_INTERFACE:${prm_includeDir}/>
+				)
+		endif()
+
 		target_include_directories(
 			${prm_namespace}-${prm_TarName} INTERFACE
 			$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/${prm_includeDir}/>  
@@ -436,7 +460,7 @@ if (NOT TARGET ae2f::CoreScript)
 	# 
 	# @param ...
 	# The sources for the project.
-	function(ae2f_CoreLibTent prm_TarName prm_TarPreFix prm_includeDir prm_namespace)
+	macro(ae2f_CoreLibTent prm_TarName prm_TarPreFix prm_includeDir prm_namespace)
 		ae2f_CoreLibTentConfigCustom(
 			${prm_TarName} 
 			${prm_TarPreFix} 
@@ -445,7 +469,7 @@ if (NOT TARGET ae2f::CoreScript)
 			${CMAKE_CURRENT_SOURCE_DIR}/Config.cmake.in
 			${ARGN}
 			)
-	endfunction()
+	endmacro()
 
 	# @brief
 	# Generate an interface project for document code for cmake utility functions. \n
