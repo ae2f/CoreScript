@@ -132,30 +132,7 @@ if (NOT TARGET ae2f::CoreScript)
 			set(gnu-flag-cc)
 			set(gnu-flag-lnk)
 
-			if("${PRM_C_COMPILER_ID}" STREQUAL "GNU")
-				set(gnu-flag-c
-					-Wstrict-prototypes 
-					-Wmissing-prototypes 
-					-Wnested-externs
-					-Wold-style-definition 
-					-Wunsuffixed-float-constants
-					)
-			endif()
-
-			if("${PRM_CXX_COMPILER_ID}" STREQUAL "GNU")
-				set(gnu-flag-cc
-					-Wold-style-cast 
-					-Woverloaded-virtual 
-					-Wnon-virtual-dtor
-					-Wsuggest-override
-					-Wuseless-cast 
-					-Wcomment 
-					-Wreorder 
-					-Wnoexcept
-					)
-			endif()
-
-			if("${PRM_C_COMPILER_ID}" STREQUAL "GNU" AND "${PRM_CXX_COMPILER_ID}" STREQUAL "GNU")
+			if("${PRM_C_COMPILER_ID}" STREQUAL "GNU" OR "${PRM_CXX_COMPILER_ID}" STREQUAL "GNU")
 				set(gnu-flag
 					-Wall -Wextra -Werror -Wpedantic
 					-Wshadow 
@@ -164,16 +141,62 @@ if (NOT TARGET ae2f::CoreScript)
 					-Wconversion 
 					-Wsign-conversion 
 					-Wnull-dereference
-					-Wformat=2 -Wformat-signedness -Wformat-truncation
+					-Wformat=2 -Wformat-signedness 
+
 					-Wimplicit-fallthrough=5 -Wswitch-enum -Wswitch-default
-					-Wvla -Wduplicated-cond -Wduplicated-branches -Wlogical-op
-					-Warith-conversion -Wmissing-declarations
+					-Wvla 
+
+					-Wmissing-declarations
 					-D_GLIBCXX_ASSERTIONS
 					-fstrict-flex-arrays=3 -fstack-protector-strong -fstack-clash-protection
 					-fanalyzer -ftrivial-auto-var-init=zero
 					)
+
 				set(
 					gnu-flag-lnk
+					)
+			endif()
+
+			if("${PRM_C_COMPILER_ID}" STREQUAL "GNU")
+				set(gnu-flag-c
+					${gnu-flag}
+					-Wstrict-prototypes 
+					-Wmissing-prototypes 
+					-Wnested-externs
+					-Wold-style-definition 
+					-Wunsuffixed-float-constants
+
+					$<$<VERSION_GREATER_EQUAL:$<C_COMPILER_VERSION>,4.7>:-Wlogical-op>
+					$<$<VERSION_GREATER_EQUAL:$<C_COMPILER_VERSION>,11>:-Warith-conversion>
+					$<$<VERSION_GREATER_EQUAL:$<C_COMPILER_VERSION>,7>:-Wformat-truncation>
+
+					$<$<VERSION_GREATER_EQUAL:$<C_COMPILER_VERSION>,6>:
+					-Wduplicated-cond 
+					-Wduplicated-branches
+					>
+					)
+			endif()
+
+			if("${PRM_CXX_COMPILER_ID}" STREQUAL "GNU")
+				set(gnu-flag-cc
+					${gnu-flag}
+					-Wold-style-cast 
+					-Woverloaded-virtual 
+					-Wnon-virtual-dtor
+					-Wsuggest-override
+					-Wuseless-cast 
+					-Wcomment 
+					-Wreorder 
+					-Wnoexcept
+
+					$<$<VERSION_GREATER_EQUAL:$<CXX_COMPILER_VERSION>,4.7>:-Wlogical-op>
+					$<$<VERSION_GREATER_EQUAL:$<CXX_COMPILER_VERSION>,11>:-Warith-conversion>
+					$<$<VERSION_GREATER_EQUAL:$<CXX_COMPILER_VERSION>,7>:-Wformat-truncation>
+
+					$<$<VERSION_GREATER_EQUAL:$<CXX_COMPILER_VERSION>,6>:
+					-Wduplicated-cond 
+					-Wduplicated-branches
+					>
 					)
 			endif()
 		endmacro(gnu)
@@ -183,6 +206,80 @@ if (NOT TARGET ae2f::CoreScript)
 			set(clang-flag-c)
 			set(clang-flag-cc)
 			set(clang-flag-lnk)
+
+			if("${PRM_C_COMPILER_ID}" STREQUAL "Clang" OR "${PRM_CXX_COMPILER_ID}" STREQUAL "Clang")
+				set(
+					clang-flag
+					-Werror
+					-Wall
+					-Wextra
+					-Wpedantic
+
+					-Wshadow
+					-Wfloat-equal
+					-Wundef
+					-Wconversion
+					-Wsign-conversion
+					-Wformat=2
+					-Wimplicit-fallthrough
+					-Wswitch-enum
+					-Wswitch-default
+					-Wvla
+					-Wmissing-declarations
+					-Wnull-dereference
+					-Wcomma
+					-Wheader-hygiene
+					-Wtautological-compare
+					-Wparentheses
+					)
+			endif()
+
+			if("${PRM_C_COMPILER_ID}" STREQUAL "Clang")
+				set(
+					clang-flag-c ${clang-flag}
+					$<$<VERSION_GREATER_EQUAL:$<C_COMPILER_VERSION>,6>:
+					-Wcast-align
+					>
+
+					$<$<VERSION_GREATER_EQUAL:$<C_COMPILER_VERSION>,4>:
+					-Wformat-signedness
+					>
+
+					$<$<VERSION_GREATER_EQUAL:$<C_COMPILER_VERSION>,8>:
+					-Wformat-truncation
+					>
+
+					-Wmissing-prototypes
+					-Wstrict-prototypes
+					-Wold-style-definition
+					-Wnested-externs
+					)
+			endif()
+
+			if("${PRM_CXX_COMPILER_ID}" STREQUAL "Clang")
+				set(
+					clang-flag-cc ${clang-flag}
+					$<$<VERSION_GREATER_EQUAL:$<CXX_COMPILER_VERSION>,6>:
+					-Wcast-align
+					>
+
+					$<$<VERSION_GREATER_EQUAL:$<CXX_COMPILER_VERSION>,4>:
+					-Wformat-signedness
+					-Wlogical-op
+					>
+
+					$<$<VERSION_GREATER_EQUAL:$<CXX_COMPILER_VERSION>,8>:
+					-Wformat-truncation
+					>
+
+					-Wold-style-cast
+					-Woverloaded-virtual
+					-Wnon-virtual-dtor
+
+					$<$<VERSION_GREATER_EQUAL:$<CXX_COMPILER_VERSION>,3.9>:-Wsuggest-override>
+					$<$<VERSION_GREATER_EQUAL:$<CXX_COMPILER_VERSION>,3.6>:-Wnoexcept>
+					)
+			endif()
 		endmacro(clang)
 
 		get_target_property(ccid-c ${TARGET} C_COMPILER_ID)
@@ -210,9 +307,6 @@ if (NOT TARGET ae2f::CoreScript)
 
 
 		target_compile_options(${TARGET} ${FLAG}
-			${gnu-flag}
-			${clang-flag}
-
 			$<$<COMPILE_LANGUAGE:CXX>:
 			${gnu-flag-cc}
 			${clang-flag-cc}
