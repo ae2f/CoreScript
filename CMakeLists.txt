@@ -263,7 +263,7 @@ if (NOT TARGET ae2f::CoreScript)
 					-Wcast-align
 					>
 
-					$<$<VERSION_GREATER_EQUAL:$<CXX_COMPILER_VERSION>,4>:
+					$<$<VERSION_GREATER_EQUAL:$<CXX_COMPILER_VERSION>,20>:
 					-Wformat-signedness
 					>
 
