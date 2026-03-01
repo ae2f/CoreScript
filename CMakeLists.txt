@@ -265,7 +265,6 @@ if (NOT TARGET ae2f::CoreScript)
 
 					$<$<VERSION_GREATER_EQUAL:$<CXX_COMPILER_VERSION>,4>:
 					-Wformat-signedness
-					-Wlogical-op
 					>
 
 					$<$<VERSION_GREATER_EQUAL:$<CXX_COMPILER_VERSION>,8>:
@@ -277,7 +276,6 @@ if (NOT TARGET ae2f::CoreScript)
 					-Wnon-virtual-dtor
 
 					$<$<VERSION_GREATER_EQUAL:$<CXX_COMPILER_VERSION>,3.9>:-Wsuggest-override>
-					$<$<VERSION_GREATER_EQUAL:$<CXX_COMPILER_VERSION>,3.6>:-Wnoexcept>
 					)
 			endif()
 		endmacro(clang)
